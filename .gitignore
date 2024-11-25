@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+.ipynb_checkpoints
+./cifar_data
+./cifar100_data
+./svhn_data
+./mnist_data
