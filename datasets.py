@@ -33,61 +33,40 @@ def get_cnn_dataset(dataset, batch_size):
     ])
     
     if dataset == "cifar":
-        trainset = torchvision.datasets.CIFAR10(root='./cifar_data', train=True,
-                                                download=True, transform=transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True)
+        trainset = torchvision.datasets.CIFAR10(root='./cifar_data', train=True, download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
         train_data = list(iter(trainloader))
-        testset = torchvision.datasets.CIFAR10(root='./cifar_data', train=False,
-                                               download=True, transform=transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                          shuffle=True)
+        testset = torchvision.datasets.CIFAR10(root='./cifar_data', train=False, download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "cifar100":
-        trainset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=True,
-                                                download=True, transform=transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True)
+        trainset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=True, download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
         train_data = list(iter(trainloader))
-        testset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=False,
-                                               download=True, transform=transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                          shuffle=True)
+        testset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=False, download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "svhn":
-        trainset = torchvision.datasets.SVHN(root='./svhn_data', split='train',
-                                                download=True, transform=transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True)
+        trainset = torchvision.datasets.SVHN(root='./svhn_data', split='train', download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
         train_data = list(iter(trainloader))
-        testset = torchvision.datasets.SVHN(root='./svhn_data', split='test',
-                                               download=True, transform=transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                          shuffle=True)
+        testset = torchvision.datasets.SVHN(root='./svhn_data', split='test', download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "mnist":
-        trainset = torchvision.datasets.MNIST(root='./mnist_data', train=True,
-                                                download=True, transform=mnist_transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True)
+        trainset = torchvision.datasets.MNIST(root='./mnist_data', train=True, download=True, transform=mnist_transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
         train_data = list(iter(trainloader))
-        testset = torchvision.datasets.MNIST(root='./mnist_data', train=False,
-                                               download=True, transform=mnist_transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                          shuffle=True)
+        testset = torchvision.datasets.MNIST(root='./mnist_data', train=False, download=True, transform=mnist_transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "fashionmnist":
-        trainset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=True,
-                                                download=True, transform=mnist_transform)
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
-                                          shuffle=True)
+        trainset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=True, download=True, transform=mnist_transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
         train_data = list(iter(trainloader))
-        testset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=False,
-                                               download=True, transform=mnist_transform)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                          shuffle=True)
+        testset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=False, download=True, transform=mnist_transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True)
         test_data = list(iter(testloader))
-        
     else:
         raise Exception("dataset: " + str(dataset) + " not supported")
 
@@ -117,6 +96,6 @@ def get_lstm_dataset(seq_length, batch_size,buffer_size=10000):
 
     dataset = dataset.shuffle(buffer_size).batch(batch_size, drop_remainder=True)
     dataset = list(iter(dataset))
-    #get dataset in right format
+    # get dataset in right format
     vocab_size = len(vocab)
     return dataset, vocab_size,char2idx,idx2char
