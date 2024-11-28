@@ -25,6 +25,13 @@ def show_dataset(dataset):
 
 def get_cnn_dataset(dataset, batch_size):
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))])
+    mnist_transform = transforms.Compose([
+        transforms.Resize((32, 32)),  # Resize images to be 32 x 32
+        transforms.Grayscale(num_output_channels=3),  # Convert grayscale to 3 channels (RGB)
+        transforms.ToTensor(),
+        transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
+    ])
+    
     if dataset == "cifar":
         trainset = torchvision.datasets.CIFAR10(root='./cifar_data', train=True,
                                                 download=True, transform=transform)
@@ -59,7 +66,6 @@ def get_cnn_dataset(dataset, batch_size):
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "mnist":
-        mnist_transform = transforms.Compose([transforms.ToTensor(), mnist_normalize])
         trainset = torchvision.datasets.MNIST(root='./mnist_data', train=True,
                                                 download=True, transform=mnist_transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
@@ -71,7 +77,6 @@ def get_cnn_dataset(dataset, batch_size):
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "fashionmnist":
-        mnist_transform = transforms.Compose([transforms.ToTensor(), mnist_normalize])
         trainset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=True,
                                                 download=True, transform=mnist_transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,

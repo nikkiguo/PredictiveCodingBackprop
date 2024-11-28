@@ -254,7 +254,7 @@ if __name__ == '__main__':
     parser.add_argument("--n_inference_steps",type=int,default=100)
     parser.add_argument("--inference_learning_rate",type=float,default=0.01) # nodes
     parser.add_argument("--network_type",type=str,default="pc")
-    parser.add_argument("--dataset",type=str,default="cifar")
+    parser.add_argument("--dataset",type=str,default="mnist")
     parser.add_argument("--loss_fn", type=str, default="mse")
 
     args = parser.parse_args()
