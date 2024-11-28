@@ -59,7 +59,6 @@ def get_cnn_dataset(dataset, batch_size):
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "mnist":
-        # mnist_normalize = transforms.Normalize((0.1307,), (0.3081,))]))
         mnist_transform = transforms.Compose([transforms.ToTensor(), mnist_normalize])
         trainset = torchvision.datasets.MNIST(root='./mnist_data', train=True,
                                                 download=True, transform=mnist_transform)
@@ -71,6 +70,19 @@ def get_cnn_dataset(dataset, batch_size):
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                           shuffle=True)
         test_data = list(iter(testloader))
+    elif dataset == "fashionmnist":
+        mnist_transform = transforms.Compose([transforms.ToTensor(), mnist_normalize])
+        trainset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=True,
+                                                download=True, transform=mnist_transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                          shuffle=True)
+        train_data = list(iter(trainloader))
+        testset = torchvision.datasets.FashionMNIST(root='./fashionmnist_data', train=False,
+                                               download=True, transform=mnist_transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                          shuffle=True)
+        test_data = list(iter(testloader))
+        
     else:
         raise Exception("dataset: " + str(dataset) + " not supported")
 

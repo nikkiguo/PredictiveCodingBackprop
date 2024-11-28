@@ -245,14 +245,14 @@ if __name__ == '__main__':
     #parsing arguments
     parser.add_argument("--logdir", type=str, default="logs")
     parser.add_argument("--savedir",type=str,default="savedir")
-    parser.add_argument("--batch_size",type=int, default=64)
-    parser.add_argument("--learning_rate",type=float,default=0.0005)
-    parser.add_argument("--N_epochs",type=int, default=100)
+    parser.add_argument("--batch_size",type=int, default=128)
+    parser.add_argument("--learning_rate",type=float,default=0.001) # weights
+    parser.add_argument("--N_epochs",type=int, default=16)
     parser.add_argument("--save_every",type=int, default=1)
     parser.add_argument("--print_every",type=int,default=10)
     parser.add_argument("--old_savedir",type=str,default="None")
     parser.add_argument("--n_inference_steps",type=int,default=100)
-    parser.add_argument("--inference_learning_rate",type=float,default=0.1)
+    parser.add_argument("--inference_learning_rate",type=float,default=0.01) # nodes
     parser.add_argument("--network_type",type=str,default="pc")
     parser.add_argument("--dataset",type=str,default="cifar")
     parser.add_argument("--loss_fn", type=str, default="mse")
@@ -285,15 +285,15 @@ if __name__ == '__main__':
     #l5 = FCLayer(120,84,64,args.learning_rate,relu,relu_deriv,device=DEVICE)
     #l6 = FCLayer(84,10,64,args.learning_rate,linear,linear_deriv,device=DEVICE)
     #layers =[l1,l2,l3,l4,l5,l6]
-    l1 = ConvLayer(32,3,6,64,5,args.learning_rate,relu,relu_deriv,device=DEVICE)
+    l1 = ConvLayer(32,3,6,128,5,args.learning_rate,relu,relu_deriv,device=DEVICE)
     l2 = MaxPool(2,device=DEVICE)
-    l3 = ConvLayer(14,6,16,64,5,args.learning_rate,relu,relu_deriv,device=DEVICE)
+    l3 = ConvLayer(14,6,16,128,5,args.learning_rate,relu,relu_deriv,device=DEVICE)
     l4 = ProjectionLayer((64,16,10,10),200,relu,relu_deriv,args.learning_rate,device=DEVICE)
-    l5 = FCLayer(200,150,64,args.learning_rate,relu,relu_deriv,device=DEVICE)
+    l5 = FCLayer(200,150,128,args.learning_rate,relu,relu_deriv,device=DEVICE)
     if args.loss_fn == "crossentropy":
-      l6 = FCLayer(150,output_size,64,args.learning_rate,softmax,linear_deriv,device=DEVICE)
+      l6 = FCLayer(150,output_size,128,args.learning_rate,softmax,linear_deriv,device=DEVICE)
     else:
-      l6 = FCLayer(150,output_size,64,args.learning_rate,linear,linear_deriv,device=DEVICE)
+      l6 = FCLayer(150,output_size,128,args.learning_rate,linear,linear_deriv,device=DEVICE)
     layers =[l1,l2,l3,l4,l5,l6]
     #l1 = ConvLayer(32,3,20,64,4,args.learning_rate,tanh,tanh_deriv,device=DEVICE)
     #l2 = ConvLayer(29,20,50,64,5,args.learning_rate,tanh,tanh_deriv,device=DEVICE)

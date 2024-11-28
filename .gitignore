@@ -9,5 +9,6 @@ __pycache__/
 /cifar100_data
 /svhn_data
 /mnist_data
+/fashionmnist_data
 /savedir
 /logs
