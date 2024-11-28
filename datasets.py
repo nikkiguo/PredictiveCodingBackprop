@@ -27,46 +27,47 @@ def get_cnn_dataset(dataset, batch_size):
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))])
     if dataset == "cifar":
         trainset = torchvision.datasets.CIFAR10(root='./cifar_data', train=True,
-                                                download=False, transform=transform)
+                                                download=True, transform=transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True)
         train_data = list(iter(trainloader))
         testset = torchvision.datasets.CIFAR10(root='./cifar_data', train=False,
-                                               download=False, transform=transform)
+                                               download=True, transform=transform)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "cifar100":
         trainset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=True,
-                                                download=False, transform=transform)
+                                                download=True, transform=transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True)
         train_data = list(iter(trainloader))
         testset = torchvision.datasets.CIFAR100(root='./cifar100_data', train=False,
-                                               download=False, transform=transform)
+                                               download=True, transform=transform)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "svhn":
         trainset = torchvision.datasets.SVHN(root='./svhn_data', split='train',
-                                                download=False, transform=transform)
+                                                download=True, transform=transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True)
         train_data = list(iter(trainloader))
         testset = torchvision.datasets.SVHN(root='./svhn_data', split='test',
-                                               download=False, transform=transform)
+                                               download=True, transform=transform)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                           shuffle=True)
         test_data = list(iter(testloader))
     elif dataset == "mnist":
+        # mnist_normalize = transforms.Normalize((0.1307,), (0.3081,))]))
         mnist_transform = transforms.Compose([transforms.ToTensor(), mnist_normalize])
         trainset = torchvision.datasets.MNIST(root='./mnist_data', train=True,
-                                                download=False, transform=mnist_transform)
+                                                download=True, transform=mnist_transform)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True)
         train_data = list(iter(trainloader))
         testset = torchvision.datasets.MNIST(root='./mnist_data', train=False,
-                                               download=False, transform=mnist_transform)
+                                               download=True, transform=mnist_transform)
         testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                           shuffle=True)
         test_data = list(iter(testloader))
