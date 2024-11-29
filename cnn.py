@@ -128,6 +128,8 @@ class PCNet(object):
       test_accs.append(mean_test_acc)
       weight_diffs_list.append(weight_diffs)
       print("TEST ACCURACY: ", mean_test_acc)
+      print("LOSS LIST: ", losslist)
+      print("MEAN LOSS: ", mean_loss)
       print("SAVING MODEL")
       self.save_model(logdir,savedir,losses,accs,weight_diffs_list,test_accs)
 
@@ -234,6 +236,8 @@ class Backprop_CNN(object):
         test_accs.append(mean_test_acc)
         print("ACCURACY: ", mean_acc)
         print("TEST ACCURACY: ", mean_test_acc)
+        print("LOSS LIST: ", losslist)
+        print("MEAN LOSS: ", mean_loss)
         print("SAVING MODEL")
         self.save_model(logdir,savedir,losses,accs,test_accs)
 
@@ -254,9 +258,9 @@ if __name__ == '__main__':
     parser.add_argument("--n_inference_steps",type=int,default=16)
     parser.add_argument("--inference_learning_rate",type=float,default=0.01) # nodes
     parser.add_argument("--network_type",type=str,default="pc")
-    parser.add_argument("--dataset",type=str,default="mnist")
+    parser.add_argument("--dataset",type=str,default="cifar")
     parser.add_argument("--loss_fn", type=str, default="mse")
-    parser.add_argument("--optim", type=str, default="SGD")
+    parser.add_argument("--optim", type=str, default="ADAM") # optimizer for weights
 
     args = parser.parse_args()
     print("Args parsed")
