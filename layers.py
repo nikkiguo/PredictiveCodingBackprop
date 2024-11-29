@@ -207,7 +207,7 @@ class ProjectionLayer(object):
       epsilon = 1e-8    # Prevents division by zero
       
       if not hasattr(self, 'v_kernel'): # Initialize running average
-        self.v_kernel = torch.zeros_like(self.kernel)
+        self.v_kernel = torch.zeros_like(self.weights)
         
       # Update running average
       self.v_kernel = beta * self.v_kernel + (1 - beta) * (dW ** 2)
@@ -222,8 +222,8 @@ class ProjectionLayer(object):
       
       # Initialize ADAM state 
       if not hasattr(self, 'm_kernel'):
-        self.m_kernel = torch.zeros_like(self.kernel)  # First moment
-        self.v_kernel = torch.zeros_like(self.kernel)  # Second moment
+        self.m_kernel = torch.zeros_like(self.weights)  # First moment
+        self.v_kernel = torch.zeros_like(self.weights)  # Second moment
       
       # Update biased moments
       self.m_kernel = beta1 * self.m_kernel + (1 - beta1) * dW
@@ -300,7 +300,7 @@ class FCLayer(object):
       epsilon = 1e-8    # Prevents division by zero
       
       if not hasattr(self, 'v_kernel'): # Initialize running average
-        self.v_kernel = torch.zeros_like(self.kernel)
+        self.v_kernel = torch.zeros_like(self.weights)
         
       # Update running average
       self.v_kernel = beta * self.v_kernel + (1 - beta) * (dW ** 2)
@@ -315,8 +315,8 @@ class FCLayer(object):
       
       # Initialize ADAM state 
       if not hasattr(self, 'm_kernel'):
-        self.m_kernel = torch.zeros_like(self.kernel)  # First moment
-        self.v_kernel = torch.zeros_like(self.kernel)  # Second moment
+        self.m_kernel = torch.zeros_like(self.weights)  # First moment
+        self.v_kernel = torch.zeros_like(self.weights)  # Second moment
       
       # Update biased moments
       self.m_kernel = beta1 * self.m_kernel + (1 - beta1) * dW
