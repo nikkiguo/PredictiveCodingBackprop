@@ -126,7 +126,7 @@ def plot_accs(pc_path, backprop_path,title):
     bp_test_acc = np.mean(backprop_test_acclist,axis=0)
     bp_test_std_acc = np.std(backprop_test_acclist,axis=0)
     ax1.fill_between(xs, pc_acc - pc_std_acc, pc_acc+ pc_std_acc, alpha=0.3,color='#228B22')
-    ax1.plot(pc_acc,label="Predictive coding train accuraacy",linestyle="--",color='#228B22')
+    ax1.plot(pc_acc,label="Predictive coding train accuracy",linestyle="--",color='#228B22')
     ax1.fill_between(xs, bp_acc - bp_std_acc, bp_acc+ bp_std_acc, alpha=0.3,color='#B22222')
     ax1.plot(bp_acc,label="Backprop train accuracy",linestyle="--",color='#B22222')
 
@@ -270,6 +270,6 @@ def merge_results(basepath, merge_name,seeds=5,cnn=False):
 if __name__ == '__main__':
     #merge_results(pc_path,backprop_path,cnn=False)
     plot_results(pc_path,backprop_path,title)
-    #plot_accs(pc_path,backprop_path,title)
+    plot_accs(pc_path,backprop_path,title)
     #plot_weight_diffs(pc_path)
     #lstm_plot_results(pc_path, backprop_path, title,rnn=True)

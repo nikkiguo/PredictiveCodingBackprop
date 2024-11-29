@@ -10,5 +10,4 @@ __pycache__/
 /svhn_data
 /mnist_data
 /fashionmnist_data
-/savedir
 /logs
