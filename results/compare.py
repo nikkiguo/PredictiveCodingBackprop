@@ -8,17 +8,17 @@ def load_data(filename):
     with open(filename, 'r') as file:
         return [float(line.strip()) for line in file]
 
-tanh_pc = load_data('./test_accuracies/tanh_cifar_pc_accuracies.txt')
-sigmoid_pc = load_data('./test_accuracies/sigmoid_cifar_pc_accuracies.txt')
-linear_pc = load_data('./test_accuracies/linear_cifar_pc_accuracies.txt')
-relu_pc = load_data('./test_accuracies/relu_cifar_pc_accuracies.txt')
-lrelu_pc = load_data('./test_accuracies/lrelu_cifar_pc_accuracies.txt')
+tanh_pc = load_data('./test_accuracies/tanh_fashionmnist_pc_accuracies.txt')
+sigmoid_pc = load_data('./test_accuracies/sigmoid_fashionmnist_pc_accuracies.txt')
+linear_pc = load_data('./test_accuracies/linear_fashionmnist_pc_accuracies.txt')
+relu_pc = load_data('./test_accuracies/relu_fashionmnist_pc_accuracies.txt')
+lrelu_pc = load_data('./test_accuracies/lrelu_fashionmnist_pc_accuracies.txt')
 
-tanh_bp = load_data('./test_accuracies/tanh_cifar_bp_accuracies.txt')
-sigmoid_bp = load_data('./test_accuracies/sigmoid_cifar_bp_accuracies.txt')
-linear_bp = load_data('./test_accuracies/linear_cifar_bp_accuracies.txt')
-relu_bp = load_data('./test_accuracies/relu_cifar_bp_accuracies.txt')
-lrelu_bp = load_data('./test_accuracies/lrelu_cifar_bp_accuracies.txt')
+tanh_bp = load_data('./test_accuracies/tanh_fashionmnist_bp_accuracies.txt')
+sigmoid_bp = load_data('./test_accuracies/sigmoid_fashionmnist_bp_accuracies.txt')
+linear_bp = load_data('./test_accuracies/linear_fashionmnist_bp_accuracies.txt')
+relu_bp = load_data('./test_accuracies/relu_fashionmnist_bp_accuracies.txt')
+lrelu_bp = load_data('./test_accuracies/lrelu_fashionmnist_bp_accuracies.txt')
 
 x = list(range(0, N_EPOCHS))
 
@@ -37,17 +37,17 @@ plt.plot(x, relu_bp, label="bp relu", color="orange", marker="x")
 plt.plot(x, lrelu_bp, label="bp leaky_relu", color="purple", marker="x")
 
 # Customize the plot
-plt.ylim(0.4, 0.7)
+plt.ylim(0.7, 0.95)
 plt.xlabel("Epoch")
 plt.ylabel("Accuracy (%)")
 
-plt.title("Test Accuracy of BP and PC on CIFAR Dataset", pad=20)
+plt.title("Test Accuracy of BP and PC on FashionMNIST Dataset", pad=20)
 plt.legend(title='Activation Function', loc="center left", bbox_to_anchor=(1, 0.5))
 plt.grid(True)
 plt.tight_layout()
 
 # save the plot
-plt.savefig('./graphs/CIFAR.png')
+plt.savefig('./graphs/FashionMNIST.png')
 
 # Show the plot
 plt.show()
