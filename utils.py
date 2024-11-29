@@ -108,6 +108,9 @@ def tanh_deriv(xs):
 def linear_deriv(x):
     return set_tensor(torch.ones((1,)))
 
+def leaky_relu(xs, negative_slope=0.01):
+    return torch.where(xs > 0, xs, negative_slope * xs)
+
 def relu(xs):
   return torch.clamp(xs,min=0)
 
@@ -124,6 +127,9 @@ def sigmoid(xs):
 
 def sigmoid_deriv(xs):
   return F.sigmoid(xs) * (torch.ones_like(xs) - F.sigmoid(xs))
+
+def leaky_relu_deriv(xs, negative_slope=0.01):
+    return torch.where(xs > 0, torch.ones_like(xs), torch.ones_like(xs) * negative_slope)
 
 
 ### loss functions
