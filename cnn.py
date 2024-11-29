@@ -259,8 +259,8 @@ if __name__ == '__main__':
     parser.add_argument("--old_savedir",type=str,default="None")
     parser.add_argument("--n_inference_steps",type=int,default=16)
     parser.add_argument("--inference_learning_rate",type=float,default=0.01) # nodes
-    parser.add_argument("--network_type",type=str,default="pc")
-    parser.add_argument("--dataset",type=str,default="cifar")
+    parser.add_argument("--network_type",type=str,default="backprop")
+    parser.add_argument("--dataset",type=str,default="fashionmnist")
     parser.add_argument("--loss_fn", type=str, default="mse")
     parser.add_argument("--optim", type=str, default="ADAM") # optimizer for weights
 
@@ -275,7 +275,7 @@ if __name__ == '__main__':
     dataset,testset = get_cnn_dataset(args.dataset,args.batch_size)
     loss_fn, loss_fn_deriv = parse_loss_function(args.loss_fn)
 
-    if args.dataset in ["cifar", "mnist","svhn"]:
+    if args.dataset in ["cifar", "mnist", "fashionmnist", "svhn"]:
         output_size = 10
     if args.dataset == "cifar100":
         output_size=100
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     if args.loss_fn == "crossentropy":
       l6 = FCLayer(150,output_size,128,args.learning_rate,softmax,linear_deriv,device=DEVICE, optim=optimizer)
     else:
-      l6 = FCLayer(150,output_size,128,args.learning_rate,linear,linear_deriv,device=DEVICE, optim=optimizer)
+      l6 = FCLayer(150,output_size,128,args.learning_rate,relu,relu_deriv,device=DEVICE, optim=optimizer)
     layers =[l1,l2,l3,l4,l5,l6]
     #l1 = ConvLayer(32,3,20,64,4,args.learning_rate,tanh,tanh_deriv,device=DEVICE)
     #l2 = ConvLayer(29,20,50,64,5,args.learning_rate,tanh,tanh_deriv,device=DEVICE)
