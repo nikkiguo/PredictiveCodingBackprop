@@ -7,6 +7,9 @@ import torchvision
 import torchvision.transforms as transforms
 from utils import *
 
+torch.manual_seed(42)
+
+
 def imshow(img):
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
