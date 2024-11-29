@@ -7,7 +7,7 @@ import math
 from utils import *
 
 class ConvLayer(object):
-  def __init__(self,input_size,num_channels,num_filters,batch_size,kernel_size,learning_rate,f,df,padding=0,stride=1,device="cpu"):
+  def __init__(self,input_size,num_channels,num_filters,batch_size,kernel_size,learning_rate,f,df,padding=0,stride=1,device="cpu", optim='SGD'):
     self.input_size = input_size
     self.num_channels = num_channels
     self.num_filters = num_filters
@@ -23,7 +23,9 @@ class ConvLayer(object):
     self.kernel= torch.empty(self.num_filters,self.num_channels,self.kernel_size,self.kernel_size).normal_(mean=0,std=0.05).to(self.device)
     self.unfold = nn.Unfold(kernel_size=(self.kernel_size,self.kernel_size),padding=self.padding,stride=self.stride).to(self.device)
     self.fold = nn.Fold(output_size=(self.input_size,self.input_size),kernel_size=(self.kernel_size,self.kernel_size),padding=self.padding,stride=self.stride).to(self.device)
-
+    self.optim = optim
+    self.time_step = 1   # Used in ADAM optimizer
+  
   def forward(self,inp):
     self.X_col = self.unfold(inp.clone())
     self.flat_weights = self.kernel.reshape(self.num_filters,-1)
@@ -31,6 +33,56 @@ class ConvLayer(object):
     self.activations = out.reshape(self.batch_size, self.num_filters, self.output_size, self.output_size)
     return self.f(self.activations)
 
+  def update_weights_with_optim(self, dW, sign_reverse):
+    
+    if self.optim == "RMSPROP":
+      # Hyperparameters
+      beta = 0.9        # Decay rate
+      epsilon = 1e-8    # Prevents division by zero
+      
+      if not hasattr(self, 'v_kernel'): # Initialize running average
+        self.v_kernel = torch.zeros_like(self.kernel)
+        
+      # Update running average
+      self.v_kernel = beta * self.v_kernel + (1 - beta) * (dW ** 2)
+      # Compute RMSprop-adjusted gradient
+      adjusted_gradient = dW / (torch.sqrt(self.v_kernel) + epsilon)
+    
+    elif self.optim == "ADAM":
+      # Hyperparameters
+      beta1 = 0.9     # m: actual velocity
+      beta2 = 0.999   # v: square velocity
+      epsilon = 1e-8
+      
+      # Initialize ADAM state 
+      if not hasattr(self, 'm_kernel'):
+        self.m_kernel = torch.zeros_like(self.kernel)  # First moment
+        self.v_kernel = torch.zeros_like(self.kernel)  # Second moment
+      
+      # Update biased moments
+      self.m_kernel = beta1 * self.m_kernel + (1 - beta1) * dW
+      self.v_kernel = beta2 * self.v_kernel + (1 - beta2) * (dW ** 2)
+      
+      # Correct bias
+      m_hat = self.m_kernel / (1 - beta1 ** self.time_step)
+      v_hat = self.v_kernel / (1 - beta2 ** self.time_step)
+      self.time_step += 1
+      
+      # Compute Adam-adjusted gradient
+      adjusted_gradient = m_hat / (torch.sqrt(v_hat) + epsilon)
+        
+    elif self.optim == "SGD" or self.optim is None:
+      adjusted_gradient = dW*2
+    else:
+        raise ValueError(f"{self.optim} not supported")
+    
+    if sign_reverse: 
+        self.kernel -= self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+    else:
+        self.kernel += self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+      
+
+        
   def update_weights(self,e,update_weights=False,sign_reverse=False):
     fn_deriv = self.df(self.activations)
     e = e * fn_deriv
@@ -39,10 +91,12 @@ class ConvLayer(object):
     dW = torch.sum(dW,dim=0)
     dW = dW.reshape((self.num_filters,self.num_channels,self.kernel_size,self.kernel_size))
     if update_weights:
-      if sign_reverse==True: # This is necessary because PC and backprop learn gradients with different signs grad_pc = -grad_bp
-        self.kernel -= self.learning_rate * torch.clamp(dW * 2,-50,50)
-      else:
-        self.kernel += self.learning_rate * torch.clamp(dW * 2,-50,50)
+      
+      self.update_weights_with_optim(dW, sign_reverse)
+      # if sign_reverse==True: # This is necessary because PC and backprop learn gradients with different signs grad_pc = -grad_bp
+      #   self.kernel -= self.learning_rate * torch.clamp(dW * 2,-50,50)
+      # else:
+      #   self.kernel += self.learning_rate * torch.clamp(dW * 2,-50,50)
     return dW
 
   def backward(self,e):
@@ -119,7 +173,7 @@ class AvgPool(object):
     pass
 
 class ProjectionLayer(object):
-  def __init__(self,input_size, output_size,f,df,learning_rate,device='cpu'):
+  def __init__(self,input_size, output_size,f,df,learning_rate,device='cpu', optim='SGD'):
     self.input_size = input_size
     self.B, self.C, self.H, self.W = self.input_size
     self.output_size =output_size
@@ -128,6 +182,8 @@ class ProjectionLayer(object):
     self.df = df
     self.device = device
     self.Hid = self.C * self.H * self.W
+    self.time_step = 1
+    self.optim = optim
     self.weights = torch.empty((self.Hid, self.output_size)).normal_(mean=0.0, std=0.05).to(self.device)
 
   def forward(self, x):
@@ -142,15 +198,61 @@ class ProjectionLayer(object):
     out = out.reshape((len(e), self.C, self.H, self.W))
     return torch.clamp(out,-50,50)
 
+
+  def update_weights_with_optim(self, dW, sign_reverse):
+    
+    if self.optim == "RMSPROP":
+      # Hyperparameters
+      beta = 0.9        # Decay rate
+      epsilon = 1e-8    # Prevents division by zero
+      
+      if not hasattr(self, 'v_kernel'): # Initialize running average
+        self.v_kernel = torch.zeros_like(self.kernel)
+        
+      # Update running average
+      self.v_kernel = beta * self.v_kernel + (1 - beta) * (dW ** 2)
+      # Compute RMSprop-adjusted gradient
+      adjusted_gradient = dW / (torch.sqrt(self.v_kernel) + epsilon)
+    
+    elif self.optim == "ADAM":
+      # Hyperparameters
+      beta1 = 0.9     # m: actual velocity
+      beta2 = 0.999   # v: square velocity
+      epsilon = 1e-8
+      
+      # Initialize ADAM state 
+      if not hasattr(self, 'm_kernel'):
+        self.m_kernel = torch.zeros_like(self.kernel)  # First moment
+        self.v_kernel = torch.zeros_like(self.kernel)  # Second moment
+      
+      # Update biased moments
+      self.m_kernel = beta1 * self.m_kernel + (1 - beta1) * dW
+      self.v_kernel = beta2 * self.v_kernel + (1 - beta2) * (dW ** 2)
+      
+      # Correct bias
+      m_hat = self.m_kernel / (1 - beta1 ** self.time_step)
+      v_hat = self.v_kernel / (1 - beta2 ** self.time_step)
+      self.time_step += 1
+      
+      # Compute Adam-adjusted gradient
+      adjusted_gradient = m_hat / (torch.sqrt(v_hat) + epsilon)
+        
+    elif self.optim == "SGD" or self.optim is None:
+      adjusted_gradient = dW*2
+    else:
+        raise ValueError(f"{self.optim} not supported")
+    
+    if sign_reverse: 
+        self.weights -= self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+    else:
+        self.weights += self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+      
   def update_weights(self, e,update_weights=False,sign_reverse=False):
     out = self.inp.reshape((len(self.inp), -1))
     fn_deriv = self.df(self.activations)
     dw = torch.matmul(out.T, e * fn_deriv)
     if update_weights:
-      if sign_reverse==True:
-        self.weights -= self.learning_rate * torch.clamp((dw * 2),-50,50)
-      else:
-        self.weights += self.learning_rate * torch.clamp((dw * 2),-50,50)
+      self.update_weights_with_optim(dw, sign_reverse)
     return dw
 
   def get_true_weight_grad(self):
@@ -167,13 +269,15 @@ class ProjectionLayer(object):
     self.weights = set_tensor(torch.from_numpy(weights))
 
 class FCLayer(object):
-  def __init__(self, input_size,output_size,batch_size, learning_rate,f,df,device="cpu"):
+  def __init__(self, input_size,output_size,batch_size, learning_rate,f,df,device="cpu", optim='SGD'):
     self.input_size = input_size
     self.output_size = output_size
     self.batch_size = batch_size
     self.learning_rate = learning_rate
     self.f = f
     self.df = df
+    self.optim = optim
+    self.time_step = 1
     self.device = device
     self.weights = torch.empty([self.input_size,self.output_size]).normal_(mean=0.0,std=0.05).to(self.device)
 
@@ -187,14 +291,62 @@ class FCLayer(object):
     out = torch.matmul(e * self.fn_deriv, self.weights.T)
     return torch.clamp(out,-50,50)
 
+  
+  def update_weights_with_optim(self, dW, sign_reverse):
+    
+    if self.optim == "RMSPROP":
+      # Hyperparameters
+      beta = 0.9        # Decay rate
+      epsilon = 1e-8    # Prevents division by zero
+      
+      if not hasattr(self, 'v_kernel'): # Initialize running average
+        self.v_kernel = torch.zeros_like(self.kernel)
+        
+      # Update running average
+      self.v_kernel = beta * self.v_kernel + (1 - beta) * (dW ** 2)
+      # Compute RMSprop-adjusted gradient
+      adjusted_gradient = dW / (torch.sqrt(self.v_kernel) + epsilon)
+    
+    elif self.optim == "ADAM":
+      # Hyperparameters
+      beta1 = 0.9     # m: actual velocity
+      beta2 = 0.999   # v: square velocity
+      epsilon = 1e-8
+      
+      # Initialize ADAM state 
+      if not hasattr(self, 'm_kernel'):
+        self.m_kernel = torch.zeros_like(self.kernel)  # First moment
+        self.v_kernel = torch.zeros_like(self.kernel)  # Second moment
+      
+      # Update biased moments
+      self.m_kernel = beta1 * self.m_kernel + (1 - beta1) * dW
+      self.v_kernel = beta2 * self.v_kernel + (1 - beta2) * (dW ** 2)
+      
+      # Correct bias
+      m_hat = self.m_kernel / (1 - beta1 ** self.time_step)
+      v_hat = self.v_kernel / (1 - beta2 ** self.time_step)
+      self.time_step += 1
+      
+      # Compute Adam-adjusted gradient
+      adjusted_gradient = m_hat / (torch.sqrt(v_hat) + epsilon)
+        
+    elif self.optim == "SGD" or self.optim is None:
+      adjusted_gradient = dW*2
+    else:
+        raise ValueError(f"{self.optim} not supported")
+    
+    if sign_reverse: 
+        self.weights -= self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+    else:
+        self.weights += self.learning_rate * torch.clamp(adjusted_gradient,-50,50)
+      
+
+
   def update_weights(self,e,update_weights=False,sign_reverse=False):
     self.fn_deriv = self.df(self.activations)
     dw = torch.matmul(self.inp.T, e * self.fn_deriv)
     if update_weights:
-      if sign_reverse==True:
-        self.weights -= self.learning_rate * torch.clamp(dw*2,-50,50)
-      else:
-        self.weights += self.learning_rate * torch.clamp(dw*2,-50,50)
+      self.update_weights_with_optim(dw, sign_reverse)
     return dw
 
   def get_true_weight_grad(self):
