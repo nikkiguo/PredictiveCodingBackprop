@@ -5,7 +5,7 @@ import sys
 import seaborn as sns
 
 ### Initial Styles ###
-plt.style.use(['seaborn-white', 'seaborn-paper'])
+plt.style.use(['seaborn-v0_8-white', 'seaborn-v0_8-paper'])
 plt.rcParams['axes.edgecolor'] = '#333F4B'
 plt.rcParams['axes.linewidth'] = 0.8
 plt.rcParams['xtick.color'] = '#333F4B'
@@ -27,7 +27,7 @@ print("loading...")
 pc_path = sys.argv[1]
 backprop_path = sys.argv[2]
 title = str(sys.argv[3])
-EPOCH_NUM = 47
+EPOCH_NUM = 16
 
 def get_results(basepath,cnn=True,merged=False):
     ### Loads results losses and accuracies files ###
