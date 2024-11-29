@@ -127,6 +127,8 @@ class PCNet(object):
       mean_test_acc, _ = self.test_accuracy(testset)
       test_accs.append(mean_test_acc)
       weight_diffs_list.append(weight_diffs)
+      print("LOSS LIST: ", losslist)
+      print("MEAN LOSS: ", mean_loss)
       print("TEST ACCURACY: ", mean_test_acc)
       print("SAVING MODEL")
       self.save_model(logdir,savedir,losses,accs,weight_diffs_list,test_accs)
